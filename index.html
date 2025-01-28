@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Utstyrsystem</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    .utstyr { display: flex; justify-content: space-between; margin-bottom: 10px; }
+    .utstyr button { margin-left: 10px; }
+  </style>
+</head>
+<body>
+  <h1>Utstyrsystem</h1>
+  <div id="oversikt">
+    <h2>Utstyrsliste</h2>
+    <div id="utstyrsliste">
+      <!-- Dynamisk liste legges til her -->
+    </div>
+  </div>
+
+  <div id="legg-til-utstyr">
+    <h2>Legg til nytt utstyr</h2>
+    <form id="utstyrForm">
+      <label for="navn">Navn:</label>
+      <input type="text" id="navn" required>
+      <label for="bilde">Bilde:</label>
+      <input type="file" id="bilde" required>
+      <button type="submit">Legg til</button>
+    </form>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
