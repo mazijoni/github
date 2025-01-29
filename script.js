@@ -17,13 +17,16 @@ function oppdaterUtstyrsliste() {
     const div = document.createElement('div');
     div.className = 'utstyr';
     div.innerHTML = `
-      <span>${item.navn} - <strong>${item.status}</strong></span>
+      <span><strong>${item.navn}</strong> <br>
+      <small>Lagt til: ${item.dato}</small></span>
       ${
         item.bilde
-          ? `<img src="${item.bilde}" alt="${item.navn}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px; margin-left: 10px;">`
+          ? `<img src="${item.bilde}" alt="${item.navn}">`
           : ''
       }
-      <button onclick="endreStatus(${index})">Endre status</button>
+      ${item.låntAv ? `<p>Lånt ut til: ${item.låntAv}</p>` : ''}
+      <button onclick="redigerUtstyr(${index})">Rediger</button>
+      <button onclick="lånUtUtstyr(${index})">Lån ut</button>
       <button onclick="slettUtstyr(${index})">Slett</button>
     `;
     utstyrsliste.appendChild(div);
@@ -35,45 +38,55 @@ utstyrForm.addEventListener('submit', (e) => {
   e.preventDefault();
   const navn = document.getElementById('navn').value;
   const bildeInput = document.getElementById('bilde').files[0];
+  const dato = new Date().toLocaleDateString();
 
-  // Hvis navn ikke er fylt ut, vis en advarsel
   if (!navn.trim()) {
     alert('Vennligst fyll inn et navn!');
     return;
   }
 
-  // Håndter bildet med FileReader
   if (bildeInput) {
     const reader = new FileReader();
     reader.onload = (event) => {
-      utstyr.push({ navn, status: 'Tilgjengelig', bilde: event.target.result });
-      lagreTilLocalStorage(); // Lagre til LocalStorage
+      utstyr.push({ navn, bilde: event.target.result, dato, låntAv: null });
+      lagreTilLocalStorage();
       oppdaterUtstyrsliste();
-      utstyrForm.reset(); // Tøm skjema
+      utstyrForm.reset();
     };
-    reader.readAsDataURL(bildeInput); // Les bildet som en Data URL
+    reader.readAsDataURL(bildeInput);
   } else {
-    // Hvis ingen bilde lastes opp
-    utstyr.push({ navn, status: 'Tilgjengelig', bilde: null });
+    utstyr.push({ navn, bilde: null, dato, låntAv: null });
     lagreTilLocalStorage();
     oppdaterUtstyrsliste();
     utstyrForm.reset();
   }
 });
 
-// Funksjon for å endre status
-function endreStatus(index) {
-  utstyr[index].status =
-    utstyr[index].status === 'Tilgjengelig' ? 'Utleid' : 'Tilgjengelig';
-  lagreTilLocalStorage(); // Lagre endringene
-  oppdaterUtstyrsliste();
+// Funksjon for å redigere utstyr
+function redigerUtstyr(index) {
+  const nyttNavn = prompt('Skriv inn nytt navn for utstyret:', utstyr[index].navn);
+  if (nyttNavn && nyttNavn.trim() !== '') {
+    utstyr[index].navn = nyttNavn;
+    lagreTilLocalStorage();
+    oppdaterUtstyrsliste();
+  }
+}
+
+// Funksjon for å låne ut utstyr
+function lånUtUtstyr(index) {
+  const låntAv = prompt('Hvem låner dette utstyret?');
+  if (låntAv && låntAv.trim() !== '') {
+    utstyr[index].låntAv = låntAv;
+    lagreTilLocalStorage();
+    oppdaterUtstyrsliste();
+  }
 }
 
 // Funksjon for å slette utstyr
 function slettUtstyr(index) {
   if (confirm('Er du sikker på at du vil slette dette utstyret?')) {
-    utstyr.splice(index, 1); // Fjern elementet fra listen
-    lagreTilLocalStorage(); // Lagre endringene
+    utstyr.splice(index, 1);
+    lagreTilLocalStorage();
     oppdaterUtstyrsliste();
   }
 }
